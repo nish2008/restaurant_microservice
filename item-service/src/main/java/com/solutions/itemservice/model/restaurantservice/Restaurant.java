@@ -1,11 +1,14 @@
-package com.solutions.restaurantservice.model;
+package com.solutions.itemservice.model.restaurantservice;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.solutions.restaurantservice.model.itemService.Item;
+import com.solutions.itemservice.model.Item;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Restaurant {
@@ -23,8 +26,8 @@ public class Restaurant {
     private Menu menu;
 
     @ManyToMany(mappedBy = "restaurants")
-    @JsonIgnore
-    private List<Item> items;
+    //@JsonBackReference      This annotation was required when we want bidirectional many to many.
+    private Set<Item> items = new HashSet<>();
 
     public Restaurant() {
     }
@@ -32,8 +35,11 @@ public class Restaurant {
     public Restaurant(String name) {
         this.name = name;
     }
+    public Restaurant(Long id) {
+        this.id = id;
+    }
 
-    public Restaurant(String name, List<Item> items) {
+    public Restaurant(String name, Set<Item> items) {
         this.name = name;
         this.items = items;
     }
@@ -67,11 +73,11 @@ public class Restaurant {
         this.menu = menu;
     }
 
-    public List<Item> getItems() {
+    public Set<Item> getItems() {
         return items;
     }
 
-    public void setItems(List<Item> items) {
+    public void setItems(Set<Item> items) {
         this.items = items;
     }
 }

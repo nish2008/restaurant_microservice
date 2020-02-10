@@ -3,6 +3,7 @@ package com.solutions.restaurantservice.service;
 import com.solutions.restaurantservice.model.Menu;
 import com.solutions.restaurantservice.model.Restaurant;
 import com.solutions.restaurantservice.model.itemService.Item;
+import com.solutions.restaurantservice.repository.RestaurantRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
+
+//http://localhost:8084/search/1
 @RestController
 @RequestMapping("/search")
 public class RestaurantService {
@@ -24,8 +28,11 @@ public class RestaurantService {
     @Autowired
     WebClient.Builder webClientBuilder;
 
+    @Autowired
+    RestaurantRespository restaurantRespository;
+
     @GetMapping("/{restaurantName}")
-    public Restaurant getByName(@PathVariable("restaurantName") String name) {
+    public Restaurant getByName(@PathVariable("restaurantName") Long id) {
 
         //1. Very first step hardcoded
         //return new Restaurant("R1","BLA BLA",new Menu(new ArrayList<Item>(Arrays.asList(new Item("I1","CLA CLA",new Price(100))))));
@@ -51,11 +58,13 @@ public class RestaurantService {
         //To come up from client_side_discovery flaw we will be using server_side_discovery in which discovery server will directly talk to the service instead of client. So we can see we have reduce on step.
 
         //4. Eureka client with webclient
-        ArrayList<Item> items = webClientBuilder.build().get().uri("http://item-service/itemservice/foo").
+
+        Optional<Restaurant> restaurant = restaurantRespository.findById(id);
+        ArrayList<Item> items = webClientBuilder.build().get().uri("http://item-service/itemservice/"+restaurant.get().getId()).
                 header(HttpHeaders.CONTENT_TYPE,"application/json").
                 header(HttpHeaders.CONTENT_TYPE,"Spring 5 WebClient").retrieve().bodyToMono(ArrayList.class).block();
-
-        return new Restaurant("R1","BLA BLA",new Menu(items));
+        restaurant.get().setMenu(new Menu(items));
+        return restaurant.get();
     }
 
 }

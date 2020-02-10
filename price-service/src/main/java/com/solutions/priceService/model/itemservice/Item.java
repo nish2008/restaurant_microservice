@@ -1,12 +1,11 @@
-package com.solutions.restaurantservice.model.itemService;
+package com.solutions.priceService.model.itemservice;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.solutions.restaurantservice.model.Restaurant;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.solutions.priceService.model.Price;
+import com.solutions.priceService.model.restaurantservice.Restaurant;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 public class Item {
@@ -19,14 +18,13 @@ public class Item {
 
     private String description;
 
-    @Transient
-    private int price;
+    @OneToOne(mappedBy = "item")
+    //@JsonBackReference
+    private Price price;
 
     @ManyToMany
     @JoinTable(name = "menu")
-    //@JsonManagedReference
-    @JsonIgnore
-    private Set<Restaurant> restaurants = new HashSet<>();
+    private List<Restaurant> restaurants;
 
     public Item() {
     }
@@ -44,17 +42,17 @@ public class Item {
         this.description = description;
     }
 
-    public Item(String name, String description, Set<Restaurant> restaurants) {
+    public Item(String name, String description, List<Restaurant> restaurants) {
         this.name = name;
         this.description = description;
         this.restaurants = restaurants;
     }
-    /*
+
     public Item(String name, String description, Price price) {
         this.name = name;
         this.description = description;
         this.price = price;
-    }*/
+    }
 
     public Long getId() {
         return id;
@@ -72,19 +70,19 @@ public class Item {
         this.name = name;
     }
 
-    public int getPrice() {
+    public Price getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Price price) {
         this.price = price;
     }
 
-    public Set<Restaurant> getRestaurants() {
+    public List<Restaurant> getRestaurants() {
         return restaurants;
     }
 
-    public void setRestaurants(Set<Restaurant> restaurants) {
+    public void setRestaurants(List<Restaurant> restaurants) {
         this.restaurants = restaurants;
     }
 }

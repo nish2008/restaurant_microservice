@@ -1,8 +1,7 @@
-package com.solutions.restaurantservice.model;
+package com.solutions.priceService.model.restaurantservice;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.solutions.restaurantservice.model.itemService.Item;
+import com.solutions.priceService.model.itemservice.Item;
 
 import javax.persistence.*;
 import java.util.List;
@@ -23,7 +22,6 @@ public class Restaurant {
     private Menu menu;
 
     @ManyToMany(mappedBy = "restaurants")
-    @JsonIgnore
     private List<Item> items;
 
     public Restaurant() {
