@@ -17,7 +17,6 @@ public class Price {
 
     @OneToOne
     @JoinColumn(name = "item_id")
-    @JsonBackReference
     private Item item;
 
     public Price() {

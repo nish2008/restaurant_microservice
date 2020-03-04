@@ -1,10 +1,11 @@
 package com.solutions.priceService.model.restaurantservice;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+
+import com.fasterxml.jackson.annotation.*;
 import com.solutions.priceService.model.itemservice.Item;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.*;
 
 @Entity
 public class Restaurant {
@@ -17,12 +18,9 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonInclude()
-    @Transient
-    private Menu menu;
-
+    @JsonIgnoreProperties("restaurants")
     @ManyToMany(mappedBy = "restaurants")
-    private List<Item> items;
+    private List<Item> items = new ArrayList<>();
 
     public Restaurant() {
     }
@@ -30,15 +28,13 @@ public class Restaurant {
     public Restaurant(String name) {
         this.name = name;
     }
+    public Restaurant(Long id) {
+        this.id = id;
+    }
 
     public Restaurant(String name, List<Item> items) {
         this.name = name;
         this.items = items;
-    }
-
-    public Restaurant(String name, Menu menu) {
-        this.name = name;
-        this.menu = menu;
     }
 
     public String getName() {
@@ -55,14 +51,6 @@ public class Restaurant {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     public List<Item> getItems() {

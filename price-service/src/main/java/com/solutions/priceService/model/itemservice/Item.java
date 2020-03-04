@@ -1,10 +1,10 @@
 package com.solutions.priceService.model.itemservice;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.solutions.priceService.model.Price;
+import com.fasterxml.jackson.annotation.*;
 import com.solutions.priceService.model.restaurantservice.Restaurant;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,14 +18,12 @@ public class Item {
 
     private String description;
 
-    @OneToOne(mappedBy = "item")
-    //@JsonBackReference
-    private Price price;
+    @Transient
+    private int price;
 
-    @ManyToMany
-    @JoinTable(name = "menu")
-    private List<Restaurant> restaurants;
-
+    @JsonIgnoreProperties("items")
+    @ManyToMany()
+    private List<Restaurant> restaurants = new ArrayList<>();
     public Item() {
     }
 
@@ -47,12 +45,12 @@ public class Item {
         this.description = description;
         this.restaurants = restaurants;
     }
-
+    /*
     public Item(String name, String description, Price price) {
         this.name = name;
         this.description = description;
         this.price = price;
-    }
+    }*/
 
     public Long getId() {
         return id;
@@ -70,11 +68,11 @@ public class Item {
         this.name = name;
     }
 
-    public Price getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(Price price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

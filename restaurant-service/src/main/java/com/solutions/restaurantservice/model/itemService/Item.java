@@ -1,11 +1,13 @@
 package com.solutions.restaurantservice.model.itemService;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import com.solutions.restaurantservice.model.Restaurant;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -22,11 +24,9 @@ public class Item {
     @Transient
     private int price;
 
-    @ManyToMany
-    @JoinTable(name = "menu")
-    //@JsonManagedReference
-    @JsonIgnore
-    private Set<Restaurant> restaurants = new HashSet<>();
+    @JsonIgnoreProperties("items")
+    @ManyToMany()
+    private List<Restaurant> restaurants = new ArrayList<Restaurant>();
 
     public Item() {
     }
@@ -44,17 +44,11 @@ public class Item {
         this.description = description;
     }
 
-    public Item(String name, String description, Set<Restaurant> restaurants) {
+    public Item(String name, String description, List<Restaurant> restaurants) {
         this.name = name;
         this.description = description;
         this.restaurants = restaurants;
     }
-    /*
-    public Item(String name, String description, Price price) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-    }*/
 
     public Long getId() {
         return id;
@@ -80,11 +74,11 @@ public class Item {
         this.price = price;
     }
 
-    public Set<Restaurant> getRestaurants() {
+    public List<Restaurant> getRestaurants() {
         return restaurants;
     }
 
-    public void setRestaurants(Set<Restaurant> restaurants) {
+    public void setRestaurants(List<Restaurant> restaurants) {
         this.restaurants = restaurants;
     }
 }

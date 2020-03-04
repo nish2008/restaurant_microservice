@@ -42,4 +42,12 @@ public class Price {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
 }

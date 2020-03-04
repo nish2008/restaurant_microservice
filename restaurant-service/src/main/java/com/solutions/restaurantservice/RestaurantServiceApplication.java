@@ -50,11 +50,9 @@ public class RestaurantServiceApplication {
 
 			restaurantRespository.save(restaurant1);
 
-
-
-			Item item1 = new Item("Chicken Biriyani", "Basmati Rice, Egg, Big Big Lollipops", new HashSet<Restaurant>(Arrays.asList(restaurant1)));
-            Item item2 = new Item("Hakka Noddle", "Chicken Chunks, Smoody Noddles",new HashSet<Restaurant>(Arrays.asList(restaurant1)));
-            Item item3 = new Item("Chicken Wrap", "Chicken , Mayonnaise, Fried Onion, Fried Tomatoes",new HashSet<Restaurant>(Arrays.asList(restaurant1)));
+			Item item1 = new Item("Chicken Biriyani", "Basmati Rice, Egg, Big Big Lollipops", Arrays.asList(restaurant1));
+            Item item2 = new Item("Hakka Noddle", "Chicken Chunks, Smoody Noddles",Arrays.asList(restaurant1));
+            Item item3 = new Item("Chicken Wrap", "Chicken , Mayonnaise, Fried Onion, Fried Tomatoes",Arrays.asList(restaurant1));
 			itemRespository.saveAll(Arrays.asList(item1,item2,item3));
 
 			Price price1 = new Price(100, item1);

@@ -1,25 +1,21 @@
 package com.solutions.restaurantservice.service;
 
-import com.solutions.restaurantservice.model.Menu;
 import com.solutions.restaurantservice.model.Restaurant;
 import com.solutions.restaurantservice.model.itemService.Item;
 import com.solutions.restaurantservice.repository.RestaurantRespository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 
-//http://localhost:8084/search/1
-@RestController
-@RequestMapping("/search")
+@Service
 public class RestaurantService {
 
     @Autowired
@@ -31,11 +27,10 @@ public class RestaurantService {
     @Autowired
     RestaurantRespository restaurantRespository;
 
-    @GetMapping("/{restaurantName}")
-    public Restaurant getByName(@PathVariable("restaurantName") Long id) {
+    public Optional<Restaurant> getRestaurant(Long id) {
 
         //1. Very first step hardcoded
-        //return new Restaurant("R1","BLA BLA",new Menu(new ArrayList<Item>(Arrays.asList(new Item("I1","CLA CLA",new Price(100))))));
+        //return new Restaurant("R1","BLA BLA",Arrays.asList(new Item("I1","CLA CLA",new Price(100)))));
 
         //2. Second approach using RestTemplate but its make synchronous calls and it uses servlet based technology to deal with request and hence end's up in exhausting memory taken each thread.
         //ArrayList<Item> items = restTemplate.getForObject("http://localhost:8083/itemservice/foo", ArrayList.class);
@@ -59,12 +54,34 @@ public class RestaurantService {
 
         //4. Eureka client with webclient
 
+
         Optional<Restaurant> restaurant = restaurantRespository.findById(id);
         ArrayList<Item> items = webClientBuilder.build().get().uri("http://item-service/itemservice/"+restaurant.get().getId()).
                 header(HttpHeaders.CONTENT_TYPE,"application/json").
                 header(HttpHeaders.CONTENT_TYPE,"Spring 5 WebClient").retrieve().bodyToMono(ArrayList.class).block();
-        restaurant.get().setMenu(new Menu(items));
-        return restaurant.get();
+        restaurant.get().setItems(items);
+        return restaurant;
+    }
+
+    public  Restaurant addRestaurant(Restaurant restaurant) {
+        List<Item> items = restaurant.getItems();
+        Restaurant restaurantWithId = restaurantRespository.save(restaurant);
+        items.forEach(i->i.setRestaurants(Arrays.asList(restaurantWithId)));
+        //restTemplate.postForObject("http://item-service/itemservice/additems",items,List.class);
+
+
+       List<Item> items1 = webClientBuilder
+                .build()
+               .post()
+               .uri("http://item-service/itemservice/additems")
+               .body(BodyInserters.fromPublisher(Mono.just(items), List.class))
+               .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+               .header(HttpHeaders.USER_AGENT, "Spring 5 WebClient")
+               .retrieve()
+               .bodyToMono(List.class)
+               .block();
+
+        return this.getRestaurant(restaurantWithId.getId()).get();
     }
 
 }

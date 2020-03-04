@@ -1,6 +1,7 @@
 package com.solutions.restaurantservice.model.priceService;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.solutions.restaurantservice.model.itemService.Item;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ public class Price {
 
     @OneToOne
     @JoinColumn(name = "item_id")
-    @JsonBackReference
+    @JsonIgnore
     private Item item;
 
     public Price() {

@@ -1,7 +1,6 @@
 package com.solutions.restaurantservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.solutions.restaurantservice.model.itemService.Item;
 
 import javax.persistence.*;
@@ -18,12 +17,8 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonInclude()
-    @Transient
-    private Menu menu;
-
+    @JsonIgnoreProperties("restaurants")
     @ManyToMany(mappedBy = "restaurants")
-    @JsonIgnore
     private List<Item> items;
 
     public Restaurant() {
@@ -38,10 +33,6 @@ public class Restaurant {
         this.items = items;
     }
 
-    public Restaurant(String name, Menu menu) {
-        this.name = name;
-        this.menu = menu;
-    }
 
     public String getName() {
         return name;
@@ -57,14 +48,6 @@ public class Restaurant {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     public List<Item> getItems() {

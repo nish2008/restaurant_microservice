@@ -1,14 +1,10 @@
 package com.solutions.itemservice.model.restaurantservice;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.solutions.itemservice.model.Item;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 public class Restaurant {
@@ -21,13 +17,9 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonInclude()
-    @Transient
-    private Menu menu;
-
+    @JsonIgnoreProperties("restaurants")
     @ManyToMany(mappedBy = "restaurants")
-    //@JsonBackReference      This annotation was required when we want bidirectional many to many.
-    private Set<Item> items = new HashSet<>();
+    private List<Item> items = new ArrayList<>();
 
     public Restaurant() {
     }
@@ -39,14 +31,9 @@ public class Restaurant {
         this.id = id;
     }
 
-    public Restaurant(String name, Set<Item> items) {
+    public Restaurant(String name, List<Item> items) {
         this.name = name;
         this.items = items;
-    }
-
-    public Restaurant(String name, Menu menu) {
-        this.name = name;
-        this.menu = menu;
     }
 
     public String getName() {
@@ -65,19 +52,11 @@ public class Restaurant {
         this.id = id;
     }
 
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
-    }
-
-    public Set<Item> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 
-    public void setItems(Set<Item> items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
 }
