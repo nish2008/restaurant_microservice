@@ -84,4 +84,25 @@ public class RestaurantService {
         return this.getRestaurant(restaurantWithId.getId()).get();
     }
 
+    public  Restaurant updateRestaurant(Restaurant restaurant) {
+        List<Item> items = restaurant.getItems();
+        Restaurant restaurantWithId = restaurantRespository.save(restaurant);
+        items.forEach(i->i.setRestaurants(Arrays.asList(restaurantWithId)));
+        //restTemplate.postForObject("http://item-service/itemservice/additems",items,List.class);
+
+
+        List<Item> items1 = webClientBuilder
+                .build()
+                .put()
+                .uri("http://item-service/itemservice/updateitems")
+                .body(BodyInserters.fromPublisher(Mono.just(items), List.class))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.USER_AGENT, "Spring 5 WebClient")
+                .retrieve()
+                .bodyToMono(List.class)
+                .block();
+
+        return this.getRestaurant(restaurantWithId.getId()).get();
+    }
+
 }

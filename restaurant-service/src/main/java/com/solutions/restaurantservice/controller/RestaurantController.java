@@ -25,5 +25,10 @@ public class RestaurantController {
     public  Restaurant addRestaurant(@RequestBody Restaurant restaurant) {
         return restaurantService.addRestaurant(restaurant);
     }
+
+    @PutMapping("/update-restaurant")
+    public Restaurant updateRestaurant(@RequestBody Restaurant restaurant) {
+        return restaurantService.updateRestaurant(restaurant);
+    }
 }
 

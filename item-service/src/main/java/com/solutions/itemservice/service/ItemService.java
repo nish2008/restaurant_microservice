@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,11 +70,28 @@ public class ItemService {
 
     public List<Item> updateItems(List<Item> items) {
         itemRespository.saveAll(items);
-        List<Price> prices = items.stream().map(i->new Price(i.getPrice(),i)).collect(Collectors.toList());
+        List<Price> prices = new ArrayList<>();
+        items.forEach(i -> {
 
-        WebClient.RequestHeadersSpec<?> requestHeadersSpec = webClientBuilder.build().put().uri("http://price-service/priceservice/updateprices").
-                header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).body(BodyInserters.fromPublisher(Mono.just(prices),List.class));
-        //requestHeadersSpec.retrieve().bodyToMono(List.class).block();
+            Price price = webClientBuilder.build().get().uri("http://price-service/priceservice/"+i.getId()).
+                    header(HttpHeaders.CONTENT_TYPE,"application/json").
+                    header(HttpHeaders.CONTENT_TYPE,"Spring 5 WebClient").retrieve().bodyToMono(Price.class).block();
+
+
+            //Price price = priceRepository.findPriceByItem_Id(i.getId());
+            price.setAmount(i.getPrice());
+            prices.add(price);
+        });
+
+        List<Price> pricesWithId = webClientBuilder.build()
+                .put()
+                .uri("http://price-service/priceservice/updateprices")
+                .body(BodyInserters.fromPublisher(Mono.just(prices),List.class))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.USER_AGENT, "Spring 5 WebClient")
+                .retrieve()
+                .bodyToMono(List.class)
+                .block();
         return (List<Item>)itemRespository.findAll();
     }
 }
